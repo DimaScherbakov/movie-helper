@@ -8,23 +8,19 @@ import cors from 'cors'; // for CORS setup, usage: app.use(cors());
 import dotenv from 'dotenv';
 import OpenAI from "openai";
 import * as process from "process";
-import * as admin from 'firebase-admin';
+import {db} from "./firebase-admin";
+import {AuthenticationMiddleware} from "./middleware/authentication.middleware";
+
 
 // Инициализация Firebase
-const serviceAccount = require('../movie-helper-994bf-firebase-adminsdk-fbsvc-3308739038.json');
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://movie-helper-994bf.firebaseio.com"
-});
-
-const db = admin.firestore();
+const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(express.json()); // parse json payload
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(helmet());
 app.use(compression());
 app.use(cors());
-const PORT = process.env.PORT || 3000;
+app.use(AuthenticationMiddleware.authenticate); // Middleware для проверки аутентификации
 
 // Эндпоинт для получения данных о пользователях
 app.get('/api/users', async (req, res) => {
