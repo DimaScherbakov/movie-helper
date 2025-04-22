@@ -7,12 +7,13 @@
 			"projectType": "application",
 			"schematics": {
 				"@schematics/angular:component": {
-					"style": "scss"
+					"style": "scss",
+          "standalone": true
 				}
 			},
 			"root": "",
 			"sourceRoot": "src",
-			"prefix": "app",
+			"prefix": "mv",
 			"architect": {
 				"build": {
 					"builder": "@angular-devkit/build-angular:application",
@@ -35,8 +36,9 @@
 							}
 						],
 						"styles": [
-							"src/styles.scss"
-						],
+              "@angular/material/prebuilt-themes/cyan-orange.css",
+              "src/styles.scss"
+            ],
 						"scripts": []
 					},
 					"configurations": {
@@ -99,8 +101,9 @@
 							}
 						],
 						"styles": [
-							"src/styles.scss"
-						],
+              "@angular/material/prebuilt-themes/cyan-orange.css",
+              "src/styles.scss"
+            ],
 						"scripts": []
 					}
 				}

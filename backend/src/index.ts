@@ -10,6 +10,8 @@ import OpenAI from "openai";
 import * as process from "process";
 import {db} from "./firebase-admin";
 import {AuthenticationMiddleware} from "./middleware/authentication.middleware";
+import {getMyMovies} from "./api/movies/my-movies";
+import {getUsers, postUsers} from "./api/users";
 
 
 // Инициализация Firebase
@@ -23,41 +25,13 @@ app.use(cors());
 app.use(AuthenticationMiddleware.authenticate); // Middleware для проверки аутентификации
 
 // Эндпоинт для получения данных о пользователях
-app.get('/api/users', async (req, res) => {
-    try {
-        const usersRef = db.collection('users');
-        const snapshot = await usersRef.get();
-
-        if (snapshot.empty) {
-            return res.status(404).json({ message: 'Нет данных о пользователях' });
-        }
-
-        let users: any[] = [];
-        snapshot.forEach((doc: any) => {
-            users.push({ id: doc.id, ...doc.data() });
-        });
-
-        res.json(users);
-    } catch (error) {
-        res.status(500).json({ error: 'Ошибка сервера', details: error.message });
-    }
-});
+app.get('/api/users', getUsers);
 
 // Эндпоинт для добавления нового пользователя
-app.post('/api/users', async (req, res) => {
-    try {
-        const { name, score, timestamp } = req.body;
-        if (!name || !score || !timestamp) {
-            return res.status(400).json({ error: 'Отсутствуют необходимые поля' });
-        }
+app.post('/api/users', postUsers);
 
-        const newUser = { name, score, timestamp };
-        const docRef = await db.collection('users').add(newUser);
-        res.status(201).json({ id: docRef.id, ...newUser });
-    } catch (error) {
-        res.status(500).json({ error: 'Ошибка сервера', details: error.message });
-    }
-});
+// Эндпоинт для получения данных о фильмах пользователя
+app.get('/api/movies/my-movies', getMyMovies);
 
 app.listen(PORT, () => {
     console.log(`Сервер запущен на http://localhost:${PORT}`);
